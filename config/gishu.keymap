@@ -55,7 +55,7 @@
 
         jk-enter {
             bindings = <&kp ENTER>;
-            key-positions = <25 26>;
+            key-positions = <16 17>;
         };
     };
 
