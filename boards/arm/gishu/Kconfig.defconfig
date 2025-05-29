@@ -22,4 +22,10 @@ config ZMK_BLE
 config ZMK_USB
     default y
 
+config ZMK_INDICATOR_LED_STRIP
+    default y
+    select SPI
+    select LED_STRIP
+    select WS2812_STRIP
+
 endif # BOARD_GISHU

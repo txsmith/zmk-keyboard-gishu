@@ -1,4 +1,6 @@
 name: gishu-keyboard
 build:
+  cmake: .
+  kconfig: Kconfig 
   settings:
     board_root: .
