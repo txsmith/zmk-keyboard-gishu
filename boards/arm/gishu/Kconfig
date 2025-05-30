@@ -4,3 +4,5 @@ config BOARD_ENABLE_DCDC
     default y
     depends on BOARD_GISHU
 
+config ZMK_INDICATOR_LED_STRIP
+    bool "Enable RGB LED strip for showing battery and output status"
