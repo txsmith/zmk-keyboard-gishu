@@ -3,9 +3,8 @@
 
 static int board_init(void) {
 
-    /* If the board is powered from USB (high voltage mode), GPIO output voltage is set to 1.8 volts by
-     * default and that is not enough to turn the green and blue LEDs on.
-     * Increase GPIO voltage to 3.0 volts.
+    /* If not already configured, set the GPIO voltage level to 3V.
+     * This allows us to read GPIO pins that are driven by the 3V+ from the battery
      */
     if ((nrf_power_mainregstatus_get(NRF_POWER) == NRF_POWER_MAINREGSTATUS_HIGH) &&
         ((NRF_UICR->REGOUT0 & UICR_REGOUT0_VOUT_Msk) == (UICR_REGOUT0_VOUT_DEFAULT << UICR_REGOUT0_VOUT_Pos))) {

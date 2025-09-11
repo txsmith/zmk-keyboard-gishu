@@ -3,6 +3,9 @@
 #include <zephyr/init.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/drivers/sensor.h>
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/sys/byteorder.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -135,50 +138,54 @@ static struct battery_color battery_state_of_charge_color(uint8_t battery_level)
     return (struct battery_color){ .color = battery_color, .pixels_to_light = pixels_to_light };
 }
 
+static void update_strip(struct battery_color battery_color, bool last_pixel_on) {
+    for (int i = 0; i < STRIP_NUM_PIXELS; i++) {
+        if (i < battery_color.pixels_to_light - 1) {
+            pixels[i] = hsb_to_rgb(battery_color.color);
+        } else if (i == battery_color.pixels_to_light - 1 && last_pixel_on) {
+            pixels[i] = hsb_to_rgb(battery_color.color);
+        } else {
+            pixels[i] = hsb_to_rgb(OFF);
+        }
+    }
+    led_strip_update_rgb(led_strip, pixels, STRIP_NUM_PIXELS);
+}
+
 static void indicate_while_usb_connected() {
 
-    uint8_t battery_level = get_battery_state_of_charge();
+    uint8_t battery_soc = get_battery_state_of_charge();
 
-    struct battery_color battery_color = battery_state_of_charge_color(battery_level);
+    struct battery_color battery_color = battery_state_of_charge_color(battery_soc);
 
-    // Initialize to some default to avoid compiler warn
-    uint8_t pixels_to_light = STRIP_NUM_PIXELS;
+    uint8_t pixels_to_light = 0;
     struct led_hsb color = battery_color.color;
 
     led_power_enable();
 
     float pct_per_pixel = 100.0 / STRIP_NUM_PIXELS;
 
-    // Initial animation
+    // Initial animation, fade in from red to green
     for (int p = 0; p <= battery_color.pixels_to_light; p++) {
         struct battery_color current_color = battery_state_of_charge_color(round(pct_per_pixel*p));
         pixels_to_light = current_color.pixels_to_light;
-        LOG_INF("Turning on %d LEDs, representing battery percetage %d, going up to %d", pixels_to_light, (int)(round(pct_per_pixel*p)*100), battery_color.pixels_to_light);
 
-        for (int i = 0; i < STRIP_NUM_PIXELS; i++) {
-            if (i >= STRIP_NUM_PIXELS - pixels_to_light) {
-                pixels[i] = hsb_to_rgb(current_color.color);
-            } else {
-                pixels[i] = hsb_to_rgb(OFF);
-            }
-        }
-
-        led_strip_update_rgb(led_strip, pixels, STRIP_NUM_PIXELS);
+        update_strip(current_color, true);
         k_sleep(K_MSEC(500/battery_color.pixels_to_light));
     }
 
     k_sleep(K_MSEC(500));
 
     // Blink while USB is connected
-    while (zmk_usb_is_powered() && zmk_ble_active_profile_is_connected()) {
-        if (battery_level <= 95) {
-            pixels[STRIP_NUM_PIXELS - pixels_to_light] = hsb_to_rgb(color);
-            led_strip_update_rgb(led_strip, pixels, STRIP_NUM_PIXELS);
-            k_sleep(K_MSEC(500));
-            pixels[STRIP_NUM_PIXELS - pixels_to_light] = hsb_to_rgb(OFF);
-            led_strip_update_rgb(led_strip, pixels, STRIP_NUM_PIXELS);
-            k_sleep(K_MSEC(500));
-        }
+    while (zmk_usb_is_powered() && zmk_ble_active_profile_is_connected() && battery_soc < 99) {
+        battery_soc = get_battery_state_of_charge();
+        battery_color = battery_state_of_charge_color(battery_soc);
+        pixels_to_light = battery_color.pixels_to_light;
+        color = battery_color.color;
+        
+        update_strip(battery_color, false);
+        k_sleep(K_MSEC(500));
+        update_strip(battery_color, true);
+        k_sleep(K_MSEC(500));
     }
 
     k_sleep(K_MSEC(500));
@@ -193,8 +200,8 @@ static void indicate_while_usb_connected() {
         new_brightness -= brightness_step;
         color.b = (uint8_t)round(new_brightness);
 
-        for (int i = STRIP_NUM_PIXELS-1; i >= 0; i--) {
-            if (i >= STRIP_NUM_PIXELS-pixels_to_light) {
+        for (int i = 0; i < STRIP_NUM_PIXELS; i++) {
+            if (i < pixels_to_light) {
                 pixels[i] = hsb_to_rgb(color);
             } else {
                 pixels[i] = hsb_to_rgb(OFF);
@@ -216,7 +223,6 @@ extern void indicator_thread(void *d0, void *d1, void *d2) {
         return;
     }
     led_power_disable();
-
     indicate_while_ble_unconnected();
     indicate_while_usb_connected();
     while (true) {
