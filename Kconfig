@@ -1,0 +1,16 @@
+# Copyright (c) 2025 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+rsource "drivers/Kconfig"
+
+if ZMK_INDICATOR_LED_STRIP
+
+config ZMK_INDICATOR_LED_BRIGHTNESS
+    int "LED indicator brightness (0-100)"
+    range 0 100
+    default 15
+    help
+      Maximum brightness for the LED indicator strip.
+      Value between 0 (off) and 100 (full brightness).
+
+endif # ZMK_INDICATOR_LED_STRIP

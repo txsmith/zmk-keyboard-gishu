@@ -1,0 +1,64 @@
+#
+# Copyright (c) 2025 The ZMK Contributors
+#
+# SPDX-License-Identifier: MIT
+#
+
+description: >
+  ZMK's MAX17055 I2C Fuel Gauge driver.
+  Based on the upstream Zephyr driver with ZMK-specific modifications
+  and debugging improvements for battery integration.
+
+compatible: "zmk,maxim-max17055"
+
+include: [sensor-device.yaml, i2c-device.yaml]
+
+properties:
+  design-capacity:
+    type: int
+    required: true
+    description: >
+      Battery design capacity in mAh.
+      Used for accurate fuel gauge calculations.
+
+  design-voltage:
+    type: int
+    required: true
+    description: >
+      Battery design voltage in mV.
+      Typical values: 3700mV for Li-ion, 3800mV for LiFePO4.
+
+  desired-voltage:
+    type: int
+    required: true
+    description: >
+      Maximum charge voltage in mV.
+      Typical values: 4200mV for Li-ion, 3600mV for LiFePO4.
+
+  desired-charging-current:
+    type: int
+    required: true
+    description: >
+      Desired charging current in mA.
+      Should match your charger capability.
+
+  i-chg-term:
+    type: int
+    required: true
+    description: >
+      Charge termination current in mA.
+      Current level at which charging is considered complete.
+
+  rsense-mohms:
+    type: int
+    required: true
+    description: >
+      Current sense resistor value in milliohms.
+      Typical values are 10mΩ or 20mΩ.
+
+  v-empty:
+    type: int
+    required: true
+    description: >
+      Empty voltage in mV.
+      Voltage level considered as battery empty.
