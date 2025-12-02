@@ -204,7 +204,8 @@ static void indicate_while_usb_connected() {
         pixels_to_light = battery_color.pixels_to_light;
         color = battery_color.color;
 
-        update_strip(battery_color, current_ma > -10);
+        bool is_charging = current_ma > 10;
+        update_strip(battery_color, !is_charging);
         k_sleep(K_MSEC(500));
         update_strip(battery_color, true);
         k_sleep(K_MSEC(500));

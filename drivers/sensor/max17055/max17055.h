@@ -59,7 +59,7 @@ struct max17055_data {
 	int16_t current;
 	/* Average current in units of 1.5625uV / Rsense */
 	int16_t avg_current;
-	/* Remaining capacity as a %age */
+	/* State of charge as a %age */
 	uint16_t state_of_charge;
 	/* Internal temperature in units of 1/256 degrees C */
 	int16_t internal_temp;
