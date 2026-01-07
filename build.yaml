@@ -1,4 +1,5 @@
 ---
+board: ["gishu"]
 include:
   - board: gishu
     artifact-name: gishu
