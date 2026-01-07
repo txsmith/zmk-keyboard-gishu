@@ -1,0 +1,3 @@
+config BOARD_GISHU
+    bool "gishu"
+    depends on SOC_NRF52840_QIAA
