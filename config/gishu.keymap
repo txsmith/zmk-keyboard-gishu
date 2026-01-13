@@ -17,7 +17,6 @@
     behaviors {
         hr: home-row-hold-tap {
             compatible = "zmk,behavior-hold-tap";
-            label = "HOMEROW_MODS";
             flavor = "balanced";
             #binding-cells = <2>;
             tapping-term-ms = <280>;
@@ -31,7 +30,6 @@
 
         ht: hold-tap {
             compatible = "zmk,behavior-hold-tap";
-            label = "HOLD_TAP";
             flavor = "balanced";
             #binding-cells = <2>;
             tapping-term-ms = <280>;
@@ -44,7 +42,6 @@
 
         ltq: layer-tap-hold-prefer {
             compatible = "zmk,behavior-hold-tap";
-            label = "LAYER_TAP_HOLD_PREFERRED";
             flavor = "hold-preferred";
             #binding-cells = <2>;
             tapping-term-ms = <280>;
@@ -65,8 +62,6 @@
         compatible = "zmk,keymap";
 
         base_layer {
-            label = "BASE";
-
             bindings = <
        &kp Q        &kp W       &kp E                   &kp R        &kp T        &kp Y      &kp U        &kp I           &kp O          &kp P
        &hr LCTRL A  &hr LALT S  &hr LGUI D              &hr LSHFT F  &kp G        &kp H      &hr RSHFT J  &hr RGUI K      &hr RALT L     &hr RCTRL SQT
@@ -77,7 +72,6 @@
         };
 
         sym_layer {
-            label = "SYM";
             bindings = <
        &kp EXCL   &kp AT     &kp HASH   &kp DLLR       &kp PRCNT             &kp CARET        &kp AMPS          &kp ASTERISK  &none     &none
        &kp TILDE  &kp EQUAL  &kp MINUS  &kp LPAR       &kp LEFT_BRACE        &kp RIGHT_BRACE  &kp RPAR          &kp COLON     &kp PIPE  &none
@@ -87,7 +81,6 @@
         };
 
         nav_layer {
-            label = "NAV";
             bindings = <
        &none      &none     &none     &none      &none         &none     &none     &none    &none      &none
        &kp LCTRL  &kp LALT  &kp LGUI  &kp LSHFT  &none         &kp LEFT  &kp DOWN  &kp UP   &kp RIGHT  &none
@@ -97,7 +90,6 @@
         };
 
         num_layer {
-            label = "NUM";
             bindings = <
        &none      &none     &none     &none      &none                       &kp PLUS               &kp N7  &kp N8  &kp N9  &kp CARET
        &kp LCTRL  &kp LALT  &kp LGUI  &kp LSHFT  &kp LEFT_PARENTHESIS        &kp RIGHT_PARENTHESIS  &kp N4  &kp N5  &kp N6  &kp ASTERISK
@@ -107,7 +99,6 @@
         };
 
         device_layer {
-            label = "DEV";
             bindings = <
        &kp C_AL_LOCK  &out OUT_TOG  &none                     &rgb_ug RGB_BRI  &none       &none   &kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &none  &none
        &none          &none         &kp LS(LC(LG(NUMBER_4)))  &rgb_ug RGB_BRD  &rgb_ug RGB_TOG         &none   &kp K_VOL_DN          &kp K_VOLUME_UP       &none  &none
