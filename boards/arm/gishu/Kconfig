@@ -4,5 +4,11 @@ config BOARD_ENABLE_DCDC
     default y
     depends on BOARD_GISHU
 
+config BOARD_ENABLE_DCDC_HV
+    bool "High voltage DCDC converter"
+    select SOC_DCDC_NRF52X_HV
+    default y
+    depends on BOARD_GISHU
+
 config ZMK_INDICATOR_LED_STRIP
     bool "Enable RGB LED strip for showing battery and output status"
