@@ -129,7 +129,7 @@ struct battery_color {
 };
 
 static struct battery_color battery_state_of_charge_color(uint8_t battery_level) {
-    uint8_t max_brightness = 15;
+    uint8_t max_brightness = CONFIG_ZMK_INDICATOR_LED_BRIGHTNESS;
 
     // Determine LED color (between red and green)
     struct led_hsb battery_color = { .h = (int)round((float)battery_level/100*120), .s = 100, .b = max_brightness };
@@ -149,6 +149,25 @@ static void update_strip(struct battery_color battery_color, bool last_pixel_on)
         }
     }
     led_strip_update_rgb(led_strip, pixels, STRIP_NUM_PIXELS);
+}
+
+static int get_battery_current_ma() {
+    const struct device *battery = DEVICE_DT_GET(DT_CHOSEN(zmk_battery));
+    struct sensor_value current_val;
+
+    if (!device_is_ready(battery)) {
+        return 0;
+    }
+
+    if (sensor_sample_fetch_chan(battery, SENSOR_CHAN_CURRENT) < 0) {
+        return 0;
+    }
+
+    if (sensor_channel_get(battery, SENSOR_CHAN_CURRENT, &current_val) < 0) {
+        return 0;
+    }
+
+    return current_val.val1;
 }
 
 static void indicate_while_usb_connected() {
@@ -175,14 +194,17 @@ static void indicate_while_usb_connected() {
 
     k_sleep(K_MSEC(500));
 
-    // Blink while USB is connected
-    while (zmk_usb_is_powered() && zmk_ble_active_profile_is_connected() && battery_soc < 99) {
+    // Blink while charging (USB connected and actively charging)
+    // Stop when: SOC >= 99% OR current near 0 (charge complete) OR connections lost
+    while (zmk_usb_is_powered() && zmk_ble_active_profile_is_connected()) {
         battery_soc = get_battery_state_of_charge();
+        int current_ma = get_battery_current_ma();
+
         battery_color = battery_state_of_charge_color(battery_soc);
         pixels_to_light = battery_color.pixels_to_light;
         color = battery_color.color;
-        
-        update_strip(battery_color, false);
+
+        update_strip(battery_color, current_ma > -10);
         k_sleep(K_MSEC(500));
         update_strip(battery_color, true);
         k_sleep(K_MSEC(500));

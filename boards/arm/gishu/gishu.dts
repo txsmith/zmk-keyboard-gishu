@@ -14,7 +14,7 @@
         zephyr,flash = &flash0;
         zmk,kscan = &kscan0;
         zmk,matrix_transform = &default_transform;
-        zmk,battery = &vbatt;
+        zmk,battery = &fuelgauge;
         zmk,indicator_strip = &led_strip;
     };
 
@@ -54,10 +54,6 @@
             ;
     };
 
-    vbatt: vbatt {
-        compatible = "zmk,battery-nrf-vddh";
-    };
-
     // Needs to be all caps for some reason
     EXT_POWER {
         compatible = "zmk,ext-power-generic";
@@ -69,16 +65,53 @@
 &pinctrl {
     spi3_default: spi3_default {
         group1 {
-            psels = <NRF_PSEL(SPIM_MOSI, 1, 10)>;
+            psels = <NRF_PSEL(SPIM_MOSI, 1, 9)>;
         };
     };
 
     spi3_sleep: spi3_sleep {
         group1 {
-            psels = <NRF_PSEL(SPIM_MOSI, 1, 10)>;
+            psels = <NRF_PSEL(SPIM_MOSI, 1, 9)>;
             low-power-enable;
         };
     };
+    i2c0_default: i2c0_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 17)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 15)>;
+            bias-pull-up;
+        };
+    };
+
+    i2c0_sleep: i2c0_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 17)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 15)>;
+            low-power-enable;
+            bias-pull-up;
+        };
+    };
+};
+
+&i2c0 {
+    status = "okay";
+    compatible = "nordic,nrf-twi";
+    pinctrl-0 = <&i2c0_default>;
+    pinctrl-1 = <&i2c0_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    fuelgauge: max17055@36 {
+        compatible = "zmk,maxim-max17055";
+        reg = <0x36>;
+        design-capacity = <500>;
+        design-voltage = <3700>;
+        desired-voltage = <4200>;
+        desired-charging-current = <300>;
+        i-chg-term = <15>;
+        rsense-mohms = <10>;
+        v-empty = <3000>;
+    };
+
 };
 
 &spi3 {

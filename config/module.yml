@@ -1,0 +1,6 @@
+name: zmk-keyboard-gishu
+build:
+  cmake: ../drivers
+  kconfig: ../drivers/Kconfig
+  settings:
+    dts_root: ..

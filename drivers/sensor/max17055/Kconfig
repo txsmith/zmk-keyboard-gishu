@@ -1,0 +1,22 @@
+# Copyright (c) 2025 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+menuconfig ZMK_MAX17055
+    bool "MAX17055 I2C-based Fuel Gauge (ZMK version)"
+    default y
+    depends on DT_HAS_ZMK_MAXIM_MAX17055_ENABLED && I2C
+    select ZMK_BATTERY
+    help
+      Enable ZMK's version of the MAX17055 I2C-based Fuel Gauge driver.
+      This is a copy of the Zephyr driver with ZMK-specific modifications
+      and debugging improvements.
+
+if ZMK_MAX17055
+
+config SENSOR_MAX17055_INIT_PRIORITY
+    int "Init priority"
+    default 75
+    help
+      Device driver initialization priority.
+
+endif #ZMK_MAX17055
