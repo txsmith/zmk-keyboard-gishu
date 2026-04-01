@@ -273,6 +273,11 @@ static int max17055_sample_fetch(const struct device *dev,
 			LOG_ERR("Failed to read REP_SOC: %d", ret);
 			return ret;
 		}
+		// ZMK shuts down the keyboard for some reason when it gets to 0% SOC
+		// We're clamping to 1% to prevent this from happening
+		if (priv->state_of_charge < 256) {
+			priv->state_of_charge = 256;
+		}
 		
 		// Read additional registers for comprehensive logging
 		int16_t voltage, current, rep_soc, at_rate, filter_cfg, learn_cfg, status, cycles;
