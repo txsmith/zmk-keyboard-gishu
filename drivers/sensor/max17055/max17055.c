@@ -268,7 +268,7 @@ static int max17055_sample_fetch(const struct device *dev,
 	}
 
 	if (chan == SENSOR_CHAN_ALL || chan == SENSOR_CHAN_GAUGE_STATE_OF_CHARGE) {
-		ret = max17055_reg_read(dev, REP_SOC, &priv->state_of_charge);
+		ret = max17055_reg_read(dev, AV_SOC, &priv->state_of_charge);
 		if (ret < 0) {
 			LOG_ERR("Failed to read REP_SOC: %d", ret);
 			return ret;
