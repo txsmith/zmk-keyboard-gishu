@@ -1,3 +1,11 @@
+ZMK-based firmware for [Gishu](https://github.com/txsmith/gishu-pcb): a 36-key wireless ergo keyboard optimized for travel.
+
+This repo contains two additions compared to other ZMK boards:
+- A driver for the MAX17055 fuel gauge
+- A driver for the center LED strip to function as battery/BLE connectivity indicator
+
+<img width="1694" height="829" alt="image" src="https://github.com/user-attachments/assets/61a33c35-53bc-4f5b-9a70-35dcc08f0204" />
+
 ## Flashing the bootloader
 
 Following this guide: https://github.com/joric/nrfmicro/wiki/Bootloader#flashing-the-bootloader-using-openocd
@@ -17,6 +25,6 @@ The bootloader should now be flashed. Disconnect from the pi, connect to USB and
 
 
 ## TODO
-Change LED_LV pin
-Change battery driver
-Fix diode on y
+- Change LED_LV pin
+- Change battery driver
+- Fix diode on y
