@@ -3,4 +3,5 @@ board: ["gishu"]
 include:
   - board: gishu
     artifact-name: gishu
+    snippet: zmk-usb-logging
 
