@@ -156,17 +156,21 @@ static int get_battery_current_ma() {
     struct sensor_value current_val;
 
     if (!device_is_ready(battery)) {
+        LOG_WRN("Battery device not ready");
         return 0;
     }
 
     if (sensor_sample_fetch_chan(battery, SENSOR_CHAN_CURRENT) < 0) {
+        LOG_WRN("Failed to fetch current sample");
         return 0;
     }
 
     if (sensor_channel_get(battery, SENSOR_CHAN_CURRENT, &current_val) < 0) {
+        LOG_WRN("Failed to get current channel");
         return 0;
     }
 
+    LOG_WRN("Current: val1=%d, val2=%d", current_val.val1, current_val.val2);
     return current_val.val1;
 }
 
@@ -204,8 +208,8 @@ static void indicate_while_usb_connected() {
         pixels_to_light = battery_color.pixels_to_light;
         color = battery_color.color;
 
-        // bool is_charging = current_ma > 10;
-        update_strip(battery_color, false);
+        bool is_charging = current_ma < -10;
+        update_strip(battery_color, !is_charging);
         k_sleep(K_MSEC(500));
         update_strip(battery_color, true);
         k_sleep(K_MSEC(500));
