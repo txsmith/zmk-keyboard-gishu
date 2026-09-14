@@ -1,7 +1,9 @@
 ---
-board: ["gishu"]
+board: ["gishu@0.1.0", "gishu@0.2.0"]
 include:
-  - board: gishu
-    artifact-name: gishu
+  - board: gishu@0.1.0
+    artifact-name: gishu-0.1.0
     snippet: zmk-usb-logging
-
+  - board: gishu@0.2.0
+    artifact-name: gishu-0.2.0
+    snippet: zmk-usb-logging
