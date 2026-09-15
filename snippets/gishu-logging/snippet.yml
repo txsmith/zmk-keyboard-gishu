@@ -1,0 +1,3 @@
+name: gishu-logging
+append:
+  EXTRA_CONF_FILE: gishu-logging.conf
