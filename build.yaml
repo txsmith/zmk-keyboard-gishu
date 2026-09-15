@@ -1,5 +1,4 @@
 ---
-board: ["gishu@0.1.0", "gishu@0.2.0"]
 include:
   - board: gishu@0.1.0
     artifact-name: gishu-0.1.0
