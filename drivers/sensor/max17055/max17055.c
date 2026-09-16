@@ -154,6 +154,7 @@ static int max17055_channel_get(const struct device *dev,
 	unsigned int tmp;
 
 	switch (chan) {
+	case SENSOR_CHAN_VOLTAGE:
 	case SENSOR_CHAN_GAUGE_VOLTAGE:
 		/* Get voltage in uV */
 		tmp = priv->voltage * 1250 / 16;
@@ -243,7 +244,7 @@ static int max17055_sample_fetch(const struct device *dev,
 	struct max17055_data *priv = dev->data;
 	int ret = -ENOTSUP;
 
-	if (chan == SENSOR_CHAN_ALL || chan == SENSOR_CHAN_GAUGE_VOLTAGE) {
+	if (chan == SENSOR_CHAN_ALL || chan == SENSOR_CHAN_GAUGE_VOLTAGE || chan == SENSOR_CHAN_VOLTAGE) {
 		ret = max17055_reg_read(dev, VCELL, &priv->voltage);
 		if (ret < 0) {
 			LOG_ERR("Failed to read voltage: %d", ret);
