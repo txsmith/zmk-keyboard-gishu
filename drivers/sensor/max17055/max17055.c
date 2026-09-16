@@ -268,23 +268,18 @@ static int max17055_sample_fetch(const struct device *dev,
 	}
 
 	if (chan == SENSOR_CHAN_ALL || chan == SENSOR_CHAN_GAUGE_STATE_OF_CHARGE) {
-		ret = max17055_reg_read(dev, AV_SOC, &priv->state_of_charge);
+		ret = max17055_reg_read(dev, REP_SOC, &priv->state_of_charge);
 		if (ret < 0) {
 			LOG_ERR("Failed to read REP_SOC: %d", ret);
 			return ret;
 		}
-		// ZMK shuts down the keyboard for some reason when it gets to 0% SOC
-		// We're clamping to 1% to prevent this from happening
-		if (priv->state_of_charge < 256) {
-			priv->state_of_charge = 256;
-		}
-		
+
 		// Read additional registers for comprehensive logging
-		int16_t voltage, current, rep_soc, at_rate, filter_cfg, learn_cfg, status, cycles;
+		int16_t voltage, current, av_soc, at_rate, filter_cfg, learn_cfg, status, cycles;
 		
 		max17055_reg_read(dev, VCELL, &voltage);
 		max17055_reg_read(dev, CURRENT, &current);  
-		max17055_reg_read(dev, REP_SOC, &rep_soc);
+		max17055_reg_read(dev, AV_SOC, &av_soc);
 		max17055_reg_read(dev, AT_RATE, &at_rate);
 		max17055_reg_read(dev, FILTER_CFG, &filter_cfg);
 		max17055_reg_read(dev, LEARN_CFG, &learn_cfg);
@@ -309,12 +304,12 @@ static int max17055_sample_fetch(const struct device *dev,
 		uint32_t cycles_whole = cycle_count / 100;
 		uint32_t cycles_frac = cycle_count % 100;
 
-		LOG_WRN("SOC - Voltage: %dmV, Current: %dmA, AvSOC: %d%%, RepSOC: %d%%, POR: %s, Cycles: %d.%02d",
-		        voltage_mv, current_ma, priv->state_of_charge / 256, rep_soc / 256,
+		LOG_WRN("SOC - Voltage: %dmV, Current: %dmA, RepSOC: %d%%, AvSOC: %d%%, POR: %s, Cycles: %d.%02d",
+		        voltage_mv, current_ma, priv->state_of_charge / 256, av_soc / 256,
 		        por_flag ? "YES" : "NO", cycles_whole, cycles_frac);
 
-		LOG_DBG("SOC Raw - Voltage: 0x%04x, Current: 0x%04x, AvSOC: 0x%04x, RepSOC: 0x%04x, AtRate: 0x%04x, FilterCfg: 0x%04x, LearnCfg: 0x%04x, Status: 0x%04x, Cycles: 0x%04x",
-		        voltage, current, priv->state_of_charge, rep_soc, at_rate, filter_cfg, learn_cfg, status, cycles);
+		LOG_DBG("SOC Raw - Voltage: 0x%04x, Current: 0x%04x, RepSOC: 0x%04x, AvSOC: 0x%04x, AtRate: 0x%04x, FilterCfg: 0x%04x, LearnCfg: 0x%04x, Status: 0x%04x, Cycles: 0x%04x",
+		        voltage, current, priv->state_of_charge, av_soc, at_rate, filter_cfg, learn_cfg, status, cycles);
 	}
 
 	if (chan == SENSOR_CHAN_ALL || chan == SENSOR_CHAN_GAUGE_TEMP) {

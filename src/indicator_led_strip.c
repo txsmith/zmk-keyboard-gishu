@@ -152,6 +152,10 @@ static void update_strip(struct battery_color battery_color, bool last_pixel_on)
 }
 
 static int get_battery_current_ma() {
+    if (!DT_NODE_HAS_COMPAT(DT_CHOSEN(zmk_battery), zmk_maxim_max17055)) {
+        return 0;
+    }
+
     const struct device *battery = DEVICE_DT_GET(DT_CHOSEN(zmk_battery));
     struct sensor_value current_val;
 
@@ -208,7 +212,7 @@ static void indicate_while_usb_connected() {
         pixels_to_light = battery_color.pixels_to_light;
         color = battery_color.color;
 
-        bool is_charging = current_ma < -10;
+        bool is_charging = current_ma > 10;
         update_strip(battery_color, !is_charging);
         k_sleep(K_MSEC(500));
         update_strip(battery_color, true);
